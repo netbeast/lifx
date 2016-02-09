@@ -72,7 +72,7 @@ loadResources(function (err, devices, client) {
       return res.status(202).send('Values not available on this lifx bulb')
     } else {
       var client = mqtt.connect()
-      client.publish('lights', JSON.stringify(req.body))
+      client.publish('netbeast/lights', JSON.stringify(req.body))
       return res.status(200).send(req.body)
     }
   })
