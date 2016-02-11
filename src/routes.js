@@ -18,8 +18,8 @@ loadResources(function (err, devices, client) {
       var response = {}
       Object.keys(req.query).forEach(function (key) {
         if (key === 'color') {
-          response['color'] = { hex: converter.hsv2Hex(data.hue, data.saturation, data.brightness),
-            rgb: converter.hsv2Rgb(data.hue, data.saturation, data.brightness)
+          response['color'] = { hex: converter.hsl2Hex(data.hue, data.saturation, data.brightness),
+            rgb: converter.hsl2Rgb(data.hue, data.saturation, data.brightness)
           }
         }
         if (bulbvalues[key]) response[key] = data[bulbvalues[key]]
@@ -44,12 +44,12 @@ loadResources(function (err, devices, client) {
     }
     if (req.body.color) {
       if (typeof (req.body.color) === 'string') {
-        var hsv = converter.hex2Hsv(req.body.color)
-        client.light(req.params.id).color(hsv[0].hue, hsv[0].saturation, hsv[0].brightness)
+        var hsl = converter.hex2Hsl(req.body.color)
+        client.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
       } else if (typeof (req.body.color) === 'object') {
         if (req.body.color.r && req.body.color.g && req.body.color.b) {
-          var hsv = converter.rgb2Hsv(req.body.color.r, req.body.color.g, req.body.color.b)
-          client.light(req.params.id).color(hsv[0].hue, hsv[0].saturation, hsv[0].brightness)
+          var hsl = converter.rgb2Hsl(req.body.color.r, req.body.color.g, req.body.color.b)
+          client.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
         } else {
           return res.status(400).send('Incorrect color format')
         }
