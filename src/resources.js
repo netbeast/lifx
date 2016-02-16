@@ -6,7 +6,7 @@ var devices = []
 
 module.exports = function (callback) {
   var objects = []
-  request.get(process.env.LOCAL_URL + '/api/resources?app=lifx',
+  request.get(process.env.NETBEAST + '/api/resources?app=lifx',
   function (err, resp, body) {
     if (err) return callback(err, null)
     if (!body || body === '[]') return callback()
@@ -26,7 +26,7 @@ module.exports = function (callback) {
     if (indx >= 0) {
       objects.splice(indx, 1)
     } else {
-      request.post({url: process.env.LOCAL_URL + '/resources',
+      request.post({url: process.env.NETBEAST + '/resources',
       json: {
         app: 'lifx',
         location: 'none',
@@ -47,7 +47,7 @@ module.exports = function (callback) {
     if (indx >= 0) {
       objects.splice(indx, 1)
     } else {
-      request.post({url: process.env.LOCAL_URL + '/resources',
+      request.post({url: process.env.NETBEAST + '/resources',
       json: {
         app: 'lifx',
         location: 'none',
@@ -63,7 +63,7 @@ module.exports = function (callback) {
   })
 
   client.on('light-offline', function (light) {
-    request.del(process.env.LOCAL_URL + '/resources?hook=/Lifx/' + light.id,
+    request.del(process.env.NETBEAST + '/resources?hook=/Lifx/' + light.id,
     function (err, resp, body) {
       if (err) callback(err, null)
     })
@@ -77,7 +77,7 @@ module.exports = function (callback) {
     client.stopDiscovery()
     if (objects.length > 0) {
       objects.forEach(function (hooks) {
-        request.del(process.env.LOCAL_URL + '/api/resources?hook=' + hooks,
+        request.del(process.env.NETBEAST + '/api/resources?hook=' + hooks,
         function (err, resp, body) {
           if (err) callback(err, null)
         })
