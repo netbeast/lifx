@@ -8,10 +8,15 @@ var mqtt = require('mqtt')
 var bulbvalues = {power: 'power', brightness: 'color.brightness', saturation: 'color.saturation', hue: 'color.hue'}
 
 loadResources(function (err, devices, client) {
-  if (err) throw err
+  if (err) console.error(err)
+
+  router.use('/', function (req, res, next) {
+    req.lifxClient = client
+    next()
+  })
 
   router.get('/Lifx/:id', function (req, res, next) {
-    client.light(req.params.id).getState(function (err, data) {
+    req.lifxClient.light(req.params.id).getState(function (err, data) {
       if (err) return res.status(404).send('Device not found')
 
       if (!Object.keys(req.query).length) return res.json(_parseLifx(data))
@@ -30,7 +35,7 @@ loadResources(function (err, devices, client) {
   })
 
   router.get('/discover', function (req, res, next) {
-    loadResources(function (err, devices, client) {
+    loadResources(function (err, devices) {
       if (err) return res.status(500).send(err)
       return res.json(devices)
     })
@@ -39,24 +44,24 @@ loadResources(function (err, devices, client) {
   router.post('/Lifx/:id', function (req, res, next) {
 
     if (req.body.power) {
-      if (req.body['power']) client.light(req.params.id).on()
-      else client.light(req.params.id).off()
+      if (req.body['power']) req.lifxClient.light(req.params.id).on()
+      else req.lifxClient.light(req.params.id).off()
     }
     if (req.body.color) {
       if (typeof (req.body.color) === 'string') {
         var hsl = converter.hex2Hsl(req.body.color)
-        client.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
+        req.lifxClient.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
       } else if (typeof (req.body.color) === 'object') {
         if (req.body.color.r && req.body.color.g && req.body.color.b) {
           var hsl = converter.rgb2Hsl(req.body.color.r, req.body.color.g, req.body.color.b)
-          client.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
+          req.lifxClient.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
         } else {
           return res.status(400).send('Incorrect color format')
         }
       } else return res.status(400).send('Incorrect color format')
     }
     if ((req.body.hue || req.body.saturation || req.body.brightness) && !req.body.color) {
-      client.light(req.params.id).getState(function (err, data) {
+      req.lifxClient.light(req.params.id).getState(function (err, data) {
         if (err) return res.status(404).send('Device not found')
 
         // data tiene los valores actuales
@@ -65,7 +70,7 @@ loadResources(function (err, devices, client) {
           data[key] = _parseKeyPost(key, req.body[key])
         })
 
-        client.light(req.params.id).color(data.hue, data.saturation, data.brightness)
+        req.lifxClient.light(req.params.id).color(data.hue, data.saturation, data.brightness)
       })
     }
     if (!(req.body.power || req.body.hue || req.body.saturation || req.body.brightness || req.body.color)) {

@@ -9,19 +9,21 @@ module.exports = function (callback) {
   request.get('http://' + process.env.NETBEAST + '/api/resources?app=lifx',
   function (err, resp, body) {
     if (err) return callback(err, null)
-    if (!body || body === '[]') return callback()
+    if (body || body !== '') {
+      body = JSON.parse(body)
 
-    body = JSON.parse(body)
-
-    if (body.length > 0) {
-      body.forEach(function (device) {
-        if (objects.indexOf(device.hook) < 0) objects.push(device.hook)
-      })
+      if (body.length > 0) {
+        body.forEach(function (device) {
+          if (objects.indexOf(device.hook) < 0) objects.push(device.hook)
+        })
+      }
     }
+    client.init()
+
+    client.startDiscovery()
   })
 
   client.on('light-new', function registerLight (light) {
-    console.log('LIGHT APPEARED')
     if (devices.indexOf(light) < 0) devices.push(light)
     var indx = objects.indexOf('/Lifx/' + light.id)
     if (indx >= 0) {
@@ -70,10 +72,6 @@ module.exports = function (callback) {
     })
   })
 
-  client.init()
-
-  client.startDiscovery()
-
   setTimeout(function () {
     client.stopDiscovery()
     if (objects.length > 0) {
@@ -87,5 +85,5 @@ module.exports = function (callback) {
     callback(null, devices, client)
     client = null
     devices = []
-  }, 7000)
+  }, 20000)
 }
