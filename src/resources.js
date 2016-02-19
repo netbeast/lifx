@@ -27,7 +27,7 @@ module.exports = function (callback) {
     if (indx >= 0) {
       objects.splice(indx, 1)
     } else {
-      request.post({url: 'http://' + process.env.NETBEAST + '/resources',
+      request.post({url: 'http://' + process.env.NETBEAST + '/api/resources',
       json: {
         app: 'lifx',
         location: 'none',
@@ -48,7 +48,7 @@ module.exports = function (callback) {
     if (indx >= 0) {
       objects.splice(indx, 1)
     } else {
-      request.post({url: 'http://' + process.env.NETBEAST + '/resources',
+      request.post({url: 'http://' + process.env.NETBEAST + '/api/resources',
       json: {
         app: 'lifx',
         location: 'none',
@@ -64,7 +64,7 @@ module.exports = function (callback) {
   })
 
   client.on('light-offline', function (light) {
-    request.del('http://' + process.env.NETBEAST + '/resources?hook=/Lifx/' + light.id,
+    request.del('http://' + process.env.NETBEAST + '/api/resources?hook=/Lifx/' + light.id,
     function (err, resp, body) {
       if (err) callback(err, null)
     })

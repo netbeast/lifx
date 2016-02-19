@@ -71,8 +71,8 @@ loadResources(function (err, devices, client) {
     if (!(req.body.power || req.body.hue || req.body.saturation || req.body.brightness || req.body.color)) {
       return res.status(202).send('Values not available on this lifx bulb')
     } else {
-      var client = mqtt.connect()
-      client.publish('netbeast/lights', JSON.stringify(req.body))
+      var mqttClient = mqtt.connect()
+      mqttClient.publish('netbeast/lights', JSON.stringify(req.body))
       return res.status(200).send(req.body)
     }
   })
