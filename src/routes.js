@@ -4,11 +4,12 @@ var converter = require('../util/color-converter')
 var express = require('express')
 var router = express.Router()
 var mqtt = require('mqtt')
+var mqttClient = mqtt.connect('ws://' + process.env.NETBEAST)
 
 var bulbvalues = {power: 'power', brightness: 'color.brightness', saturation: 'color.saturation', hue: 'color.hue'}
 
 loadResources(function (err, devices, client) {
-  if (err) console.error(err)
+  if (err) console.error(new Error(err))
 
   router.use('/', function (req, res, next) {
     req.lifxClient = client
@@ -76,7 +77,6 @@ loadResources(function (err, devices, client) {
     if (!(req.body.power || req.body.hue || req.body.saturation || req.body.brightness || req.body.color)) {
       return res.status(202).send('Values not available on this lifx bulb')
     } else {
-      var mqttClient = mqtt.connect()
       mqttClient.publish('netbeast/lights', JSON.stringify(req.body))
       return res.status(200).send(req.body)
     }
