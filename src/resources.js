@@ -6,6 +6,7 @@ var devices = []
 
 module.exports = function (callback) {
   var objects = []
+
   request.get('http://' + process.env.NETBEAST + '/api/resources?app=lifx',
   function (err, resp, body) {
     if (err) return callback(err, null)
@@ -19,7 +20,6 @@ module.exports = function (callback) {
       }
     }
     client.init()
-
     client.startDiscovery()
   })
 
