@@ -24,8 +24,8 @@ loadResources(function (err, devices, client) {
       var response = {}
       Object.keys(req.query).forEach(function (key) {
         if (key === 'color') {
-          response['color'] = { hex: converter.hsl2Hex(data.hue, data.saturation, data.brightness),
-            rgb: converter.hsl2Rgb(data.hue, data.saturation, data.brightness)
+          response['color'] = { hex: converter.hsl2Hex(data.color.hue, data.color.saturation, data.color.brightness),
+            rgb: converter.hsl2Rgb(data.color.hue, data.color.saturation, data.color.brightness)
           }
         }
         if (bulbvalues[key]) response[key] = data[bulbvalues[key]]
@@ -43,8 +43,7 @@ loadResources(function (err, devices, client) {
   })
 
   router.post('/Lifx/:id', function (req, res, next) {
-
-    if (req.body.power) {
+    if ('power' in req.body) {
       if (req.body['power']) req.lifxClient.light(req.params.id).on()
       else req.lifxClient.light(req.params.id).off()
     }
@@ -53,7 +52,7 @@ loadResources(function (err, devices, client) {
         var hsl = converter.hex2Hsl(req.body.color)
         req.lifxClient.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
       } else if (typeof (req.body.color) === 'object') {
-        if (req.body.color.r && req.body.color.g && req.body.color.b) {
+        if ('r' in req.body.color && 'g' in req.body.color && 'b' in req.body.color) {
           var hsl = converter.rgb2Hsl(req.body.color.r, req.body.color.g, req.body.color.b)
           req.lifxClient.light(req.params.id).color(hsl[0].hue, hsl[0].saturation, hsl[0].brightness)
         } else {
