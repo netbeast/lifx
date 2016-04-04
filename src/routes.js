@@ -5,12 +5,15 @@ var express = require('express')
 var router = express.Router()
 var mqtt = require('mqtt')
 var mqttClient = mqtt.connect('ws://' + process.env.NETBEAST)
+var netbeast = require('netbeast')
 
 var bulbvalues = {power: 'power', brightness: 'color.brightness', saturation: 'color.saturation', hue: 'color.hue'}
 
 loadResources(function (err, devices, client) {
-  if (err) console.error(new Error(err))
-
+  if (err) {
+    console.trace(new Error(err))
+    netbeast().error(err, 'Something wrong!')
+  }
   router.use('/', function (req, res, next) {
     req.lifxClient = client
     next()
