@@ -1,10 +1,10 @@
 var request = require('request')
 var LifxClient = require('node-lifx').Client
-var client = new LifxClient()
-
 var devices = []
 
 module.exports = function (callback) {
+  var client = new LifxClient()
+
   var objects = []
 
   request.get('http://' + process.env.NETBEAST + '/api/resources?app=lifx',
