@@ -85,5 +85,5 @@ module.exports = function (callback) {
     callback(null, devices, client)
     client = null
     devices = []
-  }, 20000)
+  }, 30000)
 }
